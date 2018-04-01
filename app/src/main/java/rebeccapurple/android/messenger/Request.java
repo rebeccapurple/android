@@ -22,7 +22,28 @@ public class Request extends Task implements rebeccapurple.commmunicator.Request
 
     public Integer unique(){ return __unique; }
 
-    Timeout timeout(){
+    synchronized int prepare(int unique, Communicator communicator){
+        __state = (__state == STATE.UNKNOWN ? STATE.READY : __state);
+        __in.arg1 = __unique = unique;
+        __in.replyTo = communicator.__messenger;
+        __communicator = communicator;
+
+        rebeccapurple.scheduler.dispatch(timeout());
+
+        return __unique;
+    }
+
+    synchronized Integer complete(Throwable exception){
+        if(!is(STATE.COMPLETED) && !is(STATE.CANCELLED)) {
+            __state = STATE.CANCELLED;
+            __exception = exception;
+            __communicator = null;
+            return __unique;
+        }
+        return null;
+    }
+
+    private Timeout timeout(){
         if(__ttl != null){
             if(__timeout != null) {
                 __timeout.ttl(__ttl);
@@ -47,19 +68,27 @@ public class Request extends Task implements rebeccapurple.commmunicator.Request
         return __timeout;
     }
 
-    protected void on(Message message){
-        if(__reply!=null){
-            __reply.on(message);
+    synchronized protected void on(Message message){
+        if(!is(STATE.CANCELLED) && !is(STATE.COMPLETED)) {
+            rebeccapurple.log.e("progress");
+            __state = STATE.INPROGRESS;
+            rebeccapurple.scheduler.reset(__timeout);
+            if(__reply!=null){
+                __reply.on(message);
+            }
+        } else {
+            rebeccapurple.scheduler.cancel(__timeout);
         }
-        rebeccapurple.log.e("progress");
-        rebeccapurple.scheduler.reset(__timeout);
     }
 
-    protected void quit(Message message){
-        if(__reply!=null){
-            __reply.on(message);
+    synchronized protected void quit(Message message){
+        if(!is(STATE.CANCELLED) && !is(STATE.COMPLETED)) {
+            rebeccapurple.log.e("quit");
+            __state = STATE.COMPLETED;
+            if(__reply!=null){
+                __reply.on(message);
+            }
         }
-        rebeccapurple.log.e("quit");
         rebeccapurple.scheduler.cancel(__timeout);
     }
 

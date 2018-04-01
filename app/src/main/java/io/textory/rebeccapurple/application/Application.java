@@ -26,9 +26,11 @@ public class Application extends MultiDexApplication {
     public void onCreate(){
         super.onCreate();
 
+        rebeccapurple.log.tag("rebeccapurple");
         rebeccapurple.log.date(false);
         rebeccapurple.log.stacktrace(false);
         rebeccapurple.log.add(rebeccapurple.android.log.get());
+        rebeccapurple.log.depth(5);
 
         rebeccapurple.android.functional.init(this.getApplicationContext());
         rebeccapurple.json.init(Application::InitializeJson);

@@ -18,7 +18,6 @@ public class Client<SERVICE> extends Communicator implements rebeccapurple.commm
     private final Class<SERVICE> __class;
 
     private Messenger __server = null;
-
     private Listener<rebeccapurple.commmunicator.Client<Message>> __connect;
     private Listener<rebeccapurple.commmunicator.Client<Message>> __disconnect;
 
@@ -43,45 +42,55 @@ public class Client<SERVICE> extends Communicator implements rebeccapurple.commm
         }
     };
 
-    protected Boolean validate(Integer v){ return v!=null && v!=0 && __requests.get(v)==null; }
+    protected <REQUEST extends rebeccapurple.commmunicator.Request<Message>> Message message(REQUEST request){ return request != null ? request.in() : null; }
+    protected <TASK extends rebeccapurple.commmunicator.Task<Message>> Message message(TASK task){ return task != null ? task.in() : null; }
+
+    protected <REQUEST extends rebeccapurple.commmunicator.Request<Message>> REQUEST prepare(REQUEST o) throws ClassCastException {
+        if(o.in() != null && !o.is(Task.STATE.CANCELLED) && !o.is(Task.STATE.COMPLETED)){
+            if(o instanceof Request) {
+                Request request = (Request) o;
+                __requests.put(request.prepare(__integer.issue(this::validate), this), request);
+            } else {
+                throw new ClassCastException();
+            }
+        } else {
+            rebeccapurple.log.e("o.in() == null || o.is(Task.STATE.CANCELLED) || o.is(Task.STATE.COMPLETED)");
+        }
+        return o;
+    }
+
+    protected <TASK extends rebeccapurple.commmunicator.Task<Message>> TASK prepare(TASK o) throws ClassCastException {
+        if(o.in() != null && !o.is(Task.STATE.CANCELLED) && !o.is(Task.STATE.COMPLETED)){
+            if(o instanceof Task){
+                Task task = (Task) o;
+                Message message = task.ready(this);
+                try {
+                    __server.send(message);
+                } catch(RemoteException e) {
+                    rebeccapurple.log.e("__server.send(message)", e);
+                }
+            } else {
+                throw new ClassCastException();
+            }
+        } else {
+            rebeccapurple.log.e("o.in() == null || o.is(Task.STATE.CANCELLED) || o.is(Task.STATE.COMPLETED)");
+        }
+        return o;
+    }
 
     @Override
     public <TASK extends rebeccapurple.commmunicator.Task<Message>> TASK send(TASK task) {
         if(__server != null){
-            if(task instanceof Task) {
-                try {
-                    __server.send(rebeccapurple.android.message.complete(task.in(), __messenger));
-                    return task;
-                } catch (RemoteException e) {
-                    rebeccapurple.log.e("__server.send(rebeccapurple.android.message.complete(task.in(), __messenger))", e);
-                }
-            } else {
-                rebeccapurple.log.e("(task instanceof Task) == false");
+            try {
+                __server.send(message(prepare(task)));
+                return task;
+            } catch (RemoteException e) {
+                rebeccapurple.log.e("__server.send(rebeccapurple.android.message.complete(task.in(), __messenger))", e);
             }
         } else {
             rebeccapurple.log.e("__server == null");
         }
         return null;
-    }
-
-    protected <REQUEST extends rebeccapurple.commmunicator.Request<Message>> Message message(REQUEST request){ return request != null ? request.in() : null; }
-
-    protected <REQUEST extends rebeccapurple.commmunicator.Request<Message>> REQUEST prepare(REQUEST o) throws ClassCastException {
-        if(o.in() != null){
-            if(o instanceof Request) {
-                Request request = (Request) o;
-                request.__in.arg1 = request.__unique = __integer.issue(this::validate);
-                request.__in.replyTo = __messenger;
-                request.__communicator = this;
-                __requests.put(request.__unique, request);
-                rebeccapurple.scheduler.dispatch(request.timeout());
-            } else {
-                throw new ClassCastException();
-            }
-        } else {
-            rebeccapurple.log.e("request.__in == null");
-        }
-        return o;
     }
 
     @Override

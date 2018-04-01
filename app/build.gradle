@@ -33,6 +33,6 @@ dependencies {
 
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.android.volley:volley:1.1.0'
-    implementation 'com.github.rebeccapurple:java:ea72c98b7a'
+    implementation 'com.github.rebeccapurple:java:daa38d206e'
 
 }

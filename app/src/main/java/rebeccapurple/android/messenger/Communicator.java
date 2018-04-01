@@ -25,7 +25,9 @@ public abstract class Communicator implements rebeccapurple.commmunicator.Base<M
 
     public IBinder binder(){ return __messenger!=null ? __messenger.getBinder() : null; }
 
-    protected void complete(Messenger from, Message out, Throwable exception){
+    Boolean validate(Integer v){ return v!=null && v!=0 && __requests.get(v)==null; }
+
+    private void callback(Messenger from, Message out, Throwable exception){
         if(out != null) {
             if (from != null) {
                 try {
@@ -40,12 +42,12 @@ public abstract class Communicator implements rebeccapurple.commmunicator.Base<M
     }
 
     public void add(int type, Operator operator){
-        __operators.put(type, operator);
+        if(operator!=null){
+            __operators.put(type, operator);
+        } else {
+            __operators.remove(type);
+        }
     }
-
-/*    protected void call(rebeccapurple.scheduler.Task task, Throwable exception, rebeccapurple.Operator.On<Task> callback){
-        // __requests.remove();
-    }*/
 
     protected void on(Message message){
         Request request = __requests.get(message.arg1);
@@ -59,7 +61,7 @@ public abstract class Communicator implements rebeccapurple.commmunicator.Base<M
         } else {
             Operator operator = __operators.get(message.what);
             if(operator!=null){
-                operator.call(message.replyTo, message, this::complete);
+                operator.call(message.replyTo, message, this::callback);
             } else {
                 rebeccapurple.log.e("operator == null");
             }
@@ -76,10 +78,9 @@ public abstract class Communicator implements rebeccapurple.commmunicator.Base<M
     public void cancel(rebeccapurple.commmunicator.Task<Message> task) {
         if(task instanceof Request) {
             Request request = (Request) task;
-            Integer unique = request.unique();
+            Integer unique = request.complete(new CancellationTaskException());
             if(unique != null) {
                 __requests.remove(unique);
-                request.cancel(new CancellationTaskException());
             } else {
                 rebeccapurple.log.e("unique == null");
             }

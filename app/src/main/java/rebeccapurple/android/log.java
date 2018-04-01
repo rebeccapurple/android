@@ -12,6 +12,7 @@ public class log implements rebeccapurple.log.Method {
         return __singleton;
     }
 
+
     @Override
     public void out(int classification, String type, rebeccapurple.log.Date current, long thread, String tag, String message, Throwable exception) {
         switch(classification){
@@ -23,7 +24,7 @@ public class log implements rebeccapurple.log.Method {
             case rebeccapurple.log.TYPE.DEBUG:          android.util.Log.d(tag, message, exception); break;
             case rebeccapurple.log.TYPE.VERBOSE:        android.util.Log.v(tag, message, exception); break;
             case rebeccapurple.log.TYPE.FLOW:           android.util.Log.v(tag, message, exception); break;
-            case rebeccapurple.log.TYPE.USER:           android.util.Log.i(tag, message, exception); break;
+            case rebeccapurple.log.TYPE.USER:           android.util.Log.i(type + "/" + tag, message, exception); break;
             default:                                    android.util.Log.v(tag, message, exception); break;
         }
     }

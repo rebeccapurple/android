@@ -9,10 +9,23 @@ public class Task implements rebeccapurple.commmunicator.Task<Message> {
     protected Long __ttl;
     protected Communicator __communicator;
 
+    synchronized Message ready(Communicator communicator){
+        if(!is(STATE.COMPLETED) && !is(STATE.CANCELLED) && !is(STATE.READY)){
+            __state = STATE.READY;
+            __communicator = communicator;
+            __in.replyTo = (__communicator!= null ? __communicator.__messenger : null);
+            return __in;
+        } else {
+            rebeccapurple.log.e("is(STATE.COMPLETED) || is(STATE.CANCELLED) || is(STATE.READY)");
+        }
+        return null;
+    }
+
     @Override public Message in() { return __in; }
     @Override public int state() { return __state; }
     @Override public Throwable exception() { return __exception; }
     @Override public Long ttl() { return __ttl; }
+
 
     @Override
     public void cancel(Throwable exception) {
