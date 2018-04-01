@@ -31,7 +31,7 @@ public class Application extends MultiDexApplication {
         functional.log.add(functional.android.log.get());
         functional.log.depth(5);
 
-        functional.android.context.init(this.getApplicationContext());
+        functional.android.main.init();
         functional.json.init(Application::InitializeJson);
 
         functional.scheduler.init(rebeccapurple.android.Scheduler.get());

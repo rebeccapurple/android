@@ -5,6 +5,7 @@ import android.os.Handler;
 import rebeccapurple.Function;
 import rebeccapurple.exception.CancelledScheduleException;
 import rebeccapurple.schedule.Time;
+import rebeccapurple.schedule.Tick;
 import rebeccapurple.schedule.Timeout;
 
 /**
@@ -29,6 +30,7 @@ public class debug {
 
         functional.scheduler.dispatch(new Time(functional.timestamp.after(1000L), functional.scheduler::log));
         functional.scheduler.dispatch(new Timeout(2000L, functional.scheduler::log));
+        scheduler(functional.scheduler.dispatch(new Tick(1000L, functional.scheduler::log)), 15000L, schedule -> ()->schedule.cancel(new CancelledScheduleException()));
         scheduler(functional.scheduler.dispatch(new Timeout(3000L, functional.scheduler::log)), 1000L, schedule->()->schedule.cancel(new CancelledScheduleException()));
         scheduler(functional.scheduler.dispatch(new Timeout(4000L, functional.scheduler::log)), 2000L, schedule->()->functional.scheduler.reset(schedule));
     }

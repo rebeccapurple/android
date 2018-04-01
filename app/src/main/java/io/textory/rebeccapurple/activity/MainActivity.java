@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
         __client.connect(client -> {
             client.send(request.ping(functional.android.message::log));
             client.send(request.ping(1L, functional.android.message::log));
+            functional.android.main.post(client.send(request.tick(functional.android.message::log)), 20000L, request->()->request.cancel(null));
         });
     }
 

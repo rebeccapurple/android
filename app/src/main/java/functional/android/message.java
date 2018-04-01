@@ -101,7 +101,32 @@ public class message {
         message.what = operator.type.pong;
         message.arg1 = request;
         message.arg2 = operator.command.quit;
-        put(message, "json", String.format(Locale.getDefault(), "{ \"pong\": %d }", System.currentTimeMillis()));
+        return put(message, "json", String.format(Locale.getDefault(), "{ \"pong\": %d }", System.currentTimeMillis()));
+    }
+
+    public static Message tock(int request){
+        Message message = Message.obtain();
+        message.what = operator.type.tock;
+        message.arg1 = request;
+        message.arg2 = 0;
+        put(message, "json", String.format(Locale.getDefault(), "{ \"tock\": %d }", System.currentTimeMillis()));
         return message;
+    }
+
+    public static Message tick(){
+        Message message = Message.obtain();
+        message.what = operator.type.tick;
+        message.arg1 = 0;
+        message.arg2 = 0;
+        return put(message, "json", String.format(Locale.getDefault(), "{ \"tick\": %d }", System.currentTimeMillis()));
+    }
+
+    public static Message tock(int request, Throwable exception){
+        Message message = Message.obtain();
+        message.what = operator.type.tock;
+        message.arg1 = request;
+        message.arg2 = 0;
+        message = put(message, "json", String.format(Locale.getDefault(), "{ \"tock\": %d }", System.currentTimeMillis()));
+        return put(message, exception);
     }
 }

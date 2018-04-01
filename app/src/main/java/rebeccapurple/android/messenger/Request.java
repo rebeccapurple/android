@@ -1,17 +1,13 @@
 package rebeccapurple.android.messenger;
 
 import android.os.Message;
+import android.os.Messenger;
 
 import rebeccapurple.Listener;
 import rebeccapurple.exception.CancelledScheduleException;
 import rebeccapurple.schedule.Timeout;
 
 public class Request extends Task implements rebeccapurple.communicator.Request<Message> {
-    protected static class timeout {
-        protected static void cancel(rebeccapurple.scheduler.Task task, Throwable exception, rebeccapurple.Operator.On<rebeccapurple.scheduler.Task> callback){
-
-        }
-    }
 
     protected Message __out;
     protected Integer __unique;
@@ -70,7 +66,6 @@ public class Request extends Task implements rebeccapurple.communicator.Request<
 
     synchronized protected void on(Message message){
         if(!is(STATE.CANCELLED) && !is(STATE.COMPLETED)) {
-            functional.log.e("progress");
             __state = STATE.INPROGRESS;
             functional.scheduler.reset(__timeout);
             if(__reply!=null){
