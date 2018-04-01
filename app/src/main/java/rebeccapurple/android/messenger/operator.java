@@ -25,4 +25,12 @@ public class operator {
             callback.on(from, rebeccapurple.android.message.pong(in.arg1), null);
         }
     }
+
+    public static class Tick implements Operator {
+
+        @Override
+        public void call(Messenger from, Message in, On callback) {
+
+        }
+    }
 }
