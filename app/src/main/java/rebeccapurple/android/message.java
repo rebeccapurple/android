@@ -2,8 +2,8 @@ package rebeccapurple.android;
 
 import android.os.Bundle;
 import android.os.Message;
+import android.os.Messenger;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -56,5 +56,20 @@ public class message {
         public android.os.Message deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
             throw new RuntimeException();
         }
+    }
+
+    public static Message complete(Message message, Messenger responsable){
+        message.replyTo = responsable;
+        return message;
+    }
+
+
+
+
+    public static Message complete(Message message, Messenger responsable, Throwable exception){
+        message.replyTo = responsable;
+        /** TODO */
+        // put(message, exception);
+        return message;
     }
 }
