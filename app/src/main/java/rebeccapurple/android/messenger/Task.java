@@ -2,7 +2,7 @@ package rebeccapurple.android.messenger;
 
 import android.os.Message;
 
-public class Task implements rebeccapurple.commmunicator.Task<Message> {
+public class Task implements rebeccapurple.communicator.Task<Message> {
     protected Message __in;
     protected int __state;
     protected Throwable __exception;
@@ -16,7 +16,7 @@ public class Task implements rebeccapurple.commmunicator.Task<Message> {
             __in.replyTo = (__communicator!= null ? __communicator.__messenger : null);
             return __in;
         } else {
-            rebeccapurple.log.e("is(STATE.COMPLETED) || is(STATE.CANCELLED) || is(STATE.READY)");
+            functional.log.e("is(STATE.COMPLETED) || is(STATE.CANCELLED) || is(STATE.READY)");
         }
         return null;
     }
@@ -38,7 +38,7 @@ public class Task implements rebeccapurple.commmunicator.Task<Message> {
                     __communicator = null;
                 }
             } else {
-                rebeccapurple.log.e("is(STATE.CANCELLED) || is(STATE.COMPLETED)", exception);
+                functional.log.e("is(STATE.CANCELLED) || is(STATE.COMPLETED)", exception);
             }
         }
     }

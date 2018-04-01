@@ -10,16 +10,16 @@ import android.os.Messenger;
 import android.os.RemoteException;
 
 import rebeccapurple.Listener;
-import rebeccapurple.exception.CancellationTaskException;
+import rebeccapurple.exception.CancelledTaskException;
 import rebeccapurple.schedule.Timeout;
 
-public class Client<SERVICE> extends Communicator implements rebeccapurple.commmunicator.Client<Message> {
+public class Client<SERVICE> extends Communicator implements rebeccapurple.communicator.Client<Message> {
     private final Context __context;
     private final Class<SERVICE> __class;
 
     private Messenger __server = null;
-    private Listener<rebeccapurple.commmunicator.Client<Message>> __connect;
-    private Listener<rebeccapurple.commmunicator.Client<Message>> __disconnect;
+    private Listener<rebeccapurple.communicator.Client<Message>> __connect;
+    private Listener<rebeccapurple.communicator.Client<Message>> __disconnect;
 
     private ServiceConnection __connection = new ServiceConnection() {
         @Override
@@ -42,10 +42,10 @@ public class Client<SERVICE> extends Communicator implements rebeccapurple.commm
         }
     };
 
-    protected <REQUEST extends rebeccapurple.commmunicator.Request<Message>> Message message(REQUEST request){ return request != null ? request.in() : null; }
-    protected <TASK extends rebeccapurple.commmunicator.Task<Message>> Message message(TASK task){ return task != null ? task.in() : null; }
+    protected <REQUEST extends rebeccapurple.communicator.Request<Message>> Message message(REQUEST request){ return request != null ? request.in() : null; }
+    protected <TASK extends rebeccapurple.communicator.Task<Message>> Message message(TASK task){ return task != null ? task.in() : null; }
 
-    protected <REQUEST extends rebeccapurple.commmunicator.Request<Message>> REQUEST prepare(REQUEST o) throws ClassCastException {
+    protected <REQUEST extends rebeccapurple.communicator.Request<Message>> REQUEST prepare(REQUEST o) throws ClassCastException {
         if(o.in() != null && !o.is(Task.STATE.CANCELLED) && !o.is(Task.STATE.COMPLETED)){
             if(o instanceof Request) {
                 Request request = (Request) o;
@@ -54,12 +54,12 @@ public class Client<SERVICE> extends Communicator implements rebeccapurple.commm
                 throw new ClassCastException();
             }
         } else {
-            rebeccapurple.log.e("o.in() == null || o.is(Task.STATE.CANCELLED) || o.is(Task.STATE.COMPLETED)");
+            functional.log.e("o.in() == null || o.is(Task.STATE.CANCELLED) || o.is(Task.STATE.COMPLETED)");
         }
         return o;
     }
 
-    protected <TASK extends rebeccapurple.commmunicator.Task<Message>> TASK prepare(TASK o) throws ClassCastException {
+    protected <TASK extends rebeccapurple.communicator.Task<Message>> TASK prepare(TASK o) throws ClassCastException {
         if(o.in() != null && !o.is(Task.STATE.CANCELLED) && !o.is(Task.STATE.COMPLETED)){
             if(o instanceof Task){
                 Task task = (Task) o;
@@ -67,43 +67,43 @@ public class Client<SERVICE> extends Communicator implements rebeccapurple.commm
                 try {
                     __server.send(message);
                 } catch(RemoteException e) {
-                    rebeccapurple.log.e("__server.send(message)", e);
+                    functional.log.e("__server.send(message)", e);
                 }
             } else {
                 throw new ClassCastException();
             }
         } else {
-            rebeccapurple.log.e("o.in() == null || o.is(Task.STATE.CANCELLED) || o.is(Task.STATE.COMPLETED)");
+            functional.log.e("o.in() == null || o.is(Task.STATE.CANCELLED) || o.is(Task.STATE.COMPLETED)");
         }
         return o;
     }
 
     @Override
-    public <TASK extends rebeccapurple.commmunicator.Task<Message>> TASK send(TASK task) {
+    public <TASK extends rebeccapurple.communicator.Task<Message>> TASK send(TASK task) {
         if(__server != null){
             try {
                 __server.send(message(prepare(task)));
                 return task;
             } catch (RemoteException e) {
-                rebeccapurple.log.e("__server.send(rebeccapurple.android.message.complete(task.in(), __messenger))", e);
+                functional.log.e("__server.send(rebeccapurple.android.message.complete(task.in(), __messenger))", e);
             }
         } else {
-            rebeccapurple.log.e("__server == null");
+            functional.log.e("__server == null");
         }
         return null;
     }
 
     @Override
-    public <REQUEST extends rebeccapurple.commmunicator.Request<Message>> REQUEST send(REQUEST request) {
+    public <REQUEST extends rebeccapurple.communicator.Request<Message>> REQUEST send(REQUEST request) {
         if(__server != null) {
             try {
                 __server.send(message(prepare(request)));
                 return request;
             } catch (RemoteException | ClassCastException e) {
-                rebeccapurple.log.e("__server.send(rebeccapurple.android.message.complete(request.in(), __messenger))", e);
+                functional.log.e("__server.send(rebeccapurple.android.message.complete(request.in(), __messenger))", e);
             }
         } else {
-            rebeccapurple.log.e("__server == null");
+            functional.log.e("__server == null");
         }
         return null;
     }
@@ -116,7 +116,7 @@ public class Client<SERVICE> extends Communicator implements rebeccapurple.commm
     }
 
     @Override
-    public void connect(Listener<rebeccapurple.commmunicator.Client<Message>> connect) {
+    public void connect(Listener<rebeccapurple.communicator.Client<Message>> connect) {
         __connect = connect;
         connect();
     }
@@ -129,7 +129,7 @@ public class Client<SERVICE> extends Communicator implements rebeccapurple.commm
     }
 
     @Override
-    public void disconnect(Listener<rebeccapurple.commmunicator.Client<Message>> disconnect) {
+    public void disconnect(Listener<rebeccapurple.communicator.Client<Message>> disconnect) {
         __disconnect = disconnect;
         disconnect();
     }

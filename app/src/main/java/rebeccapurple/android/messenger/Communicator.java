@@ -6,9 +6,10 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.SparseArray;
 
-import rebeccapurple.exception.CancellationTaskException;
+import functional.android.messenger.operator;
+import rebeccapurple.exception.CancelledTaskException;
 
-public abstract class Communicator implements rebeccapurple.commmunicator.Base<Message> {
+public abstract class Communicator implements rebeccapurple.communicator.Base<Message> {
     public static class Handler extends android.os.Handler {
         private final Communicator __communicator;
 
@@ -19,7 +20,7 @@ public abstract class Communicator implements rebeccapurple.commmunicator.Base<M
 
     protected final SparseArray<Operator> __operators;
     protected final SparseArray<Request> __requests;
-    protected final rebeccapurple.integer __integer;
+    protected final functional.integer __integer;
     protected Messenger __messenger;
     protected Handler __handler;
 
@@ -31,12 +32,12 @@ public abstract class Communicator implements rebeccapurple.commmunicator.Base<M
         if(out != null) {
             if (from != null) {
                 try {
-                    from.send(rebeccapurple.android.message.complete(out, __messenger, exception));
+                    from.send(functional.android.message.complete(out, __messenger, exception));
                 } catch (RemoteException e) {
-                    rebeccapurple.log.e("from.send(rebeccapurple.android.message.complete(out, __messenger, exception))", e);
+                    functional.log.e("from.send(rebeccapurple.android.message.complete(out, __messenger, exception))", e);
                 }
             } else {
-                rebeccapurple.log.e("from == null");
+                functional.log.e("from == null");
             }
         }
     }
@@ -52,7 +53,7 @@ public abstract class Communicator implements rebeccapurple.commmunicator.Base<M
     protected void on(Message message){
         Request request = __requests.get(message.arg1);
         if(request != null){
-            if(message.arg2 == rebeccapurple.android.messenger.operator.command.quit) {
+            if(message.arg2 == operator.command.quit) {
                 __requests.delete(message.arg1);
                 request.quit(message);
             } else {
@@ -63,36 +64,36 @@ public abstract class Communicator implements rebeccapurple.commmunicator.Base<M
             if(operator!=null){
                 operator.call(message.replyTo, message, this::callback);
             } else {
-                rebeccapurple.log.e("operator == null");
+                functional.log.e("operator == null");
             }
         }
     }
 
     @Override
     public void close() {
-        rebeccapurple.android.collection.each(__requests, this::cancel);
+        functional.android.collection.each(__requests, this::cancel);
         __requests.clear();
     }
 
     @Override
-    public void cancel(rebeccapurple.commmunicator.Task<Message> task) {
+    public void cancel(rebeccapurple.communicator.Task<Message> task) {
         if(task instanceof Request) {
             Request request = (Request) task;
-            Integer unique = request.complete(new CancellationTaskException());
+            Integer unique = request.complete(new CancelledTaskException());
             if(unique != null) {
                 __requests.remove(unique);
             } else {
-                rebeccapurple.log.e("unique == null");
+                functional.log.e("unique == null");
             }
         } else {
-            rebeccapurple.log.e("(task instanceof Request) == false");
+            functional.log.e("(task instanceof Request) == false");
         }
     }
 
     Communicator(){
         __operators = new SparseArray<>();
         __requests = new SparseArray<>();
-        __integer = new rebeccapurple.integer();
+        __integer = new functional.integer();
         __messenger = null;
         __handler = null;
     }

@@ -3,7 +3,7 @@ package io.textory.rebeccapurple.application;
 import android.os.Handler;
 
 import rebeccapurple.Function;
-import rebeccapurple.exception.CancellationScheduleException;
+import rebeccapurple.exception.CancelledScheduleException;
 import rebeccapurple.schedule.Time;
 import rebeccapurple.schedule.Timeout;
 
@@ -20,16 +20,16 @@ public class debug {
         try {
             __handler.postDelayed(factory.call(schedule), delay);
         } catch (Throwable e) {
-            rebeccapurple.log.e(schedule, e);
+            functional.log.e(schedule, e);
         }
     }
 
     public static void run(){
         __handler = new Handler();
 
-        rebeccapurple.scheduler.dispatch(new Time(rebeccapurple.timestamp.after(1000L), rebeccapurple.scheduler::log));
-        rebeccapurple.scheduler.dispatch(new Timeout(2000L, rebeccapurple.scheduler::log));
-        scheduler(rebeccapurple.scheduler.dispatch(new Timeout(3000L, rebeccapurple.scheduler::log)), 1000L, schedule->()->schedule.cancel(new CancellationScheduleException()));
-        scheduler(rebeccapurple.scheduler.dispatch(new Timeout(4000L, rebeccapurple.scheduler::log)), 2000L, schedule->()->rebeccapurple.scheduler.reset(schedule));
+        functional.scheduler.dispatch(new Time(functional.timestamp.after(1000L), functional.scheduler::log));
+        functional.scheduler.dispatch(new Timeout(2000L, functional.scheduler::log));
+        scheduler(functional.scheduler.dispatch(new Timeout(3000L, functional.scheduler::log)), 1000L, schedule->()->schedule.cancel(new CancelledScheduleException()));
+        scheduler(functional.scheduler.dispatch(new Timeout(4000L, functional.scheduler::log)), 2000L, schedule->()->functional.scheduler.reset(schedule));
     }
 }

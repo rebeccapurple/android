@@ -4,10 +4,9 @@ import android.os.Message;
 import android.os.Messenger;
 
 import rebeccapurple.Listener;
-import rebeccapurple.commmunicator;
 
-public class Server extends Communicator implements rebeccapurple.commmunicator.Server<Message> {
-    private Listener<commmunicator.Server<Message>> __listen = null;
+public class Server extends Communicator implements rebeccapurple.communicator.Server<Message> {
+    private Listener<rebeccapurple.communicator.Server<Message>> __listen = null;
 
     @Override
     public void listen() {
@@ -20,7 +19,7 @@ public class Server extends Communicator implements rebeccapurple.commmunicator.
     }
 
     @Override
-    public void listen(Listener<commmunicator.Server<Message>> listen) {
+    public void listen(Listener<rebeccapurple.communicator.Server<Message>> listen) {
         __listen = listen;
         listen();
     }

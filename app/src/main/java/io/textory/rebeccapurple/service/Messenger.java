@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import functional.android.messenger.operator;
 import rebeccapurple.android.messenger.Server;
 
 public class Messenger extends Service {
@@ -13,31 +14,31 @@ public class Messenger extends Service {
     @Override
     public void onCreate(){
         super.onCreate();
-        rebeccapurple.log.e("create");
+        functional.log.e("create");
         __server = new Server();
 
-        rebeccapurple.android.messenger.operator.init(__server);
+        operator.init(__server);
 
         __server.listen();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        rebeccapurple.log.e("start");
+        functional.log.e("start");
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        rebeccapurple.log.e("bind");
+        functional.log.e("bind");
         return __server != null ? __server.binder() : null;
     }
 
     @Override
     public void onDestroy(){
         __server.close();
-        rebeccapurple.log.e("destroy");
+        functional.log.e("destroy");
         super.onDestroy();
     }
 }

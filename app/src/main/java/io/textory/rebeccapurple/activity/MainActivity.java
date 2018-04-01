@@ -3,8 +3,12 @@ package io.textory.rebeccapurple.activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import functional.android.messenger.operator;
+import functional.android.messenger.request;
+
 import io.textory.rebeccapurple.R;
 import io.textory.rebeccapurple.service.Messenger;
+
 import rebeccapurple.android.messenger.Client;
 
 public class MainActivity extends AppCompatActivity {
@@ -18,13 +22,12 @@ public class MainActivity extends AppCompatActivity {
 
         __client = new Client<>(this, Messenger.class);
 
-        rebeccapurple.android.messenger.operator.init(__client);
+        operator.init(__client);
 
         __client.connect(client -> {
-            client.send(rebeccapurple.android.messenger.request.ping(rebeccapurple.android.message::log));
-            client.send(rebeccapurple.android.messenger.request.ping(1L, rebeccapurple.android.message::log));
+            client.send(request.ping(functional.android.message::log));
+            client.send(request.ping(1L, functional.android.message::log));
         });
-        // __client.connect(client -> client.send(rebeccapurple.android.messenger.request.ping(rebeccapurple.android.message::log)));
     }
 
     @Override

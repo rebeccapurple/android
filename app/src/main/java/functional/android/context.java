@@ -1,12 +1,12 @@
-package rebeccapurple.android;
+package functional.android;
 
 import android.content.Context;
 import android.os.Handler;
 
-public class functional {
+public class context {
     private static Handler __handler = null;
     public static void init(Context context){
-        synchronized (functional.class) {
+        synchronized (context.class) {
             if(__handler == null) {
                 __handler = new Handler(context.getMainLooper());
             }

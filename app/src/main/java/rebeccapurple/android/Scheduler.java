@@ -3,13 +3,13 @@ package rebeccapurple.android;
 import android.os.Handler;
 import android.os.Looper;
 
-public class scheduler extends rebeccapurple.scheduler.Loop {
-    private static scheduler __singleton = null;
+public class Scheduler extends rebeccapurple.scheduler.Loop {
+    private static Scheduler __singleton = null;
 
-    public static scheduler get() {
-        synchronized (scheduler.class) {
+    public static Scheduler get() {
+        synchronized (Scheduler.class) {
             if(__singleton == null) {
-                __singleton = new scheduler();
+                __singleton = new Scheduler();
             }
         }
         return __singleton;
@@ -53,5 +53,5 @@ public class scheduler extends rebeccapurple.scheduler.Loop {
         unlock();
     }
 
-    private scheduler(){}
+    private Scheduler(){}
 }

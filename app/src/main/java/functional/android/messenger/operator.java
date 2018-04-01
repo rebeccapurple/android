@@ -1,7 +1,10 @@
-package rebeccapurple.android.messenger;
+package functional.android.messenger;
 
 import android.os.Message;
 import android.os.Messenger;
+
+import rebeccapurple.android.messenger.Communicator;
+import rebeccapurple.android.messenger.Operator;
 
 public class operator {
     public static class type {
@@ -21,8 +24,8 @@ public class operator {
     public static class Ping implements Operator {
         @Override
         public void call(Messenger from, Message in, On callback) {
-            rebeccapurple.log.e(in);
-            callback.on(from, rebeccapurple.android.message.pong(in.arg1), null);
+            functional.log.e(in);
+            callback.on(from, functional.android.message.pong(in.arg1), null);
         }
     }
 

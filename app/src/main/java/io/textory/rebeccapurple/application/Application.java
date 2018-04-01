@@ -4,7 +4,6 @@ import android.support.multidex.MultiDexApplication;
 
 import com.google.gson.GsonBuilder;
 
-// import ;
 
 /**
  *
@@ -17,8 +16,8 @@ import com.google.gson.GsonBuilder;
 public class Application extends MultiDexApplication {
 
     private static void InitializeJson(GsonBuilder builder){
-        builder.registerTypeAdapter(android.os.Message.class, new rebeccapurple.android.message.serializer());
-        builder.registerTypeAdapter(android.os.Message.class, new rebeccapurple.android.message.deserializer());
+        builder.registerTypeAdapter(android.os.Message.class, new functional.android.message.serializer());
+        builder.registerTypeAdapter(android.os.Message.class, new functional.android.message.deserializer());
     }
 
 
@@ -26,17 +25,17 @@ public class Application extends MultiDexApplication {
     public void onCreate(){
         super.onCreate();
 
-        rebeccapurple.log.tag("rebeccapurple");
-        rebeccapurple.log.date(false);
-        rebeccapurple.log.stacktrace(false);
-        rebeccapurple.log.add(rebeccapurple.android.log.get());
-        rebeccapurple.log.depth(5);
+        functional.log.tag("rebeccapurple");
+        functional.log.date(false);
+        functional.log.stacktrace(false);
+        functional.log.add(functional.android.log.get());
+        functional.log.depth(5);
 
-        rebeccapurple.android.functional.init(this.getApplicationContext());
-        rebeccapurple.json.init(Application::InitializeJson);
+        functional.android.context.init(this.getApplicationContext());
+        functional.json.init(Application::InitializeJson);
 
-        rebeccapurple.scheduler.init(rebeccapurple.android.scheduler.get());
-        rebeccapurple.scheduler.on();
+        functional.scheduler.init(rebeccapurple.android.Scheduler.get());
+        functional.scheduler.on();
 
         io.textory.rebeccapurple.application.debug.run();
     }
@@ -54,7 +53,7 @@ public class Application extends MultiDexApplication {
     public void onTerminate(){
 //        rebeccapurple.android.Scheduler.Off();
         /** scheduler off */
-        rebeccapurple.scheduler.off();
+        functional.scheduler.off();
 
         super.onTerminate();
     }

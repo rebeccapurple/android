@@ -1,4 +1,4 @@
-package rebeccapurple.android;
+package functional.android;
 
 import android.os.Bundle;
 import android.os.Message;
@@ -19,12 +19,12 @@ import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 import java.util.Locale;
 
+import functional.android.messenger.operator;
 
 public class message {
+    public static void log(Message message){ functional.log.e(message); }
 
-    public static void log(Message message){ rebeccapurple.log.e(message); }
-
-    public static class serializer implements JsonSerializer<android.os.Message> {
+    public static class serializer implements JsonSerializer<Message> {
         private JsonArray arguments(android.os.Message message){
             JsonArray array = new JsonArray();
             array.add(message.arg1);
@@ -55,7 +55,7 @@ public class message {
         }
     }
 
-    public static class deserializer implements JsonDeserializer<android.os.Message> {
+    public static class deserializer implements JsonDeserializer<Message> {
 
         @Override
         public android.os.Message deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
@@ -67,8 +67,8 @@ public class message {
         if(exception != null) {
             Bundle data = message.getData();
             data.putString("exception", String.format(Locale.getDefault(), "{ \"exception\": { \"type\": \"%s\", \"message\": %s }}",
-                                                                           rebeccapurple.string.from(exception.getClass(), false),
-                                                                           exception.getMessage()));
+                    functional.string.from(exception.getClass(), false),
+                    exception.getMessage()));
             message.setData(data);
         }
         return message;
@@ -90,7 +90,7 @@ public class message {
 
     public static Message ping(){
         Message message = Message.obtain();
-        message.what = rebeccapurple.android.messenger.operator.type.ping;
+        message.what = operator.type.ping;
         message.arg1 = 0;
         message.arg2 = 0;
         return put(message, "json", String.format(Locale.getDefault(), "{ \"ping\": %d }", System.currentTimeMillis()));
@@ -98,9 +98,9 @@ public class message {
 
     public static Message pong(int request){
         Message message = Message.obtain();
-        message.what = rebeccapurple.android.messenger.operator.type.pong;
+        message.what = operator.type.pong;
         message.arg1 = request;
-        message.arg2 = rebeccapurple.android.messenger.operator.command.quit;
+        message.arg2 = operator.command.quit;
         put(message, "json", String.format(Locale.getDefault(), "{ \"pong\": %d }", System.currentTimeMillis()));
         return message;
     }

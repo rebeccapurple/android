@@ -3,10 +3,10 @@ package rebeccapurple.android.messenger;
 import android.os.Message;
 
 import rebeccapurple.Listener;
-import rebeccapurple.exception.CancellationScheduleException;
+import rebeccapurple.exception.CancelledScheduleException;
 import rebeccapurple.schedule.Timeout;
 
-public class Request extends Task implements rebeccapurple.commmunicator.Request<Message> {
+public class Request extends Task implements rebeccapurple.communicator.Request<Message> {
     protected static class timeout {
         protected static void cancel(rebeccapurple.scheduler.Task task, Throwable exception, rebeccapurple.Operator.On<rebeccapurple.scheduler.Task> callback){
 
@@ -28,7 +28,7 @@ public class Request extends Task implements rebeccapurple.commmunicator.Request
         __in.replyTo = communicator.__messenger;
         __communicator = communicator;
 
-        rebeccapurple.scheduler.dispatch(timeout());
+        functional.scheduler.dispatch(timeout());
 
         return __unique;
     }
@@ -54,15 +54,15 @@ public class Request extends Task implements rebeccapurple.commmunicator.Request
                             callback.on(task, exception);
                             __communicator.cancel(Request.this);
                         } else {
-                            rebeccapurple.log.e("callback == null", exception);
+                            functional.log.e("callback == null", exception);
                         }
                     } else {
-                        rebeccapurple.log.e("task == null", exception);
+                        functional.log.e("task == null", exception);
                     }
                 });
             }
         } else if(__timeout != null) {
-            __timeout.cancel(new CancellationScheduleException());
+            __timeout.cancel(new CancelledScheduleException());
             __timeout = null;
         }
         return __timeout;
@@ -70,26 +70,26 @@ public class Request extends Task implements rebeccapurple.commmunicator.Request
 
     synchronized protected void on(Message message){
         if(!is(STATE.CANCELLED) && !is(STATE.COMPLETED)) {
-            rebeccapurple.log.e("progress");
+            functional.log.e("progress");
             __state = STATE.INPROGRESS;
-            rebeccapurple.scheduler.reset(__timeout);
+            functional.scheduler.reset(__timeout);
             if(__reply!=null){
                 __reply.on(message);
             }
         } else {
-            rebeccapurple.scheduler.cancel(__timeout);
+            functional.scheduler.cancel(__timeout);
         }
     }
 
     synchronized protected void quit(Message message){
         if(!is(STATE.CANCELLED) && !is(STATE.COMPLETED)) {
-            rebeccapurple.log.e("quit");
+            functional.log.e("quit");
             __state = STATE.COMPLETED;
             if(__reply!=null){
                 __reply.on(message);
             }
         }
-        rebeccapurple.scheduler.cancel(__timeout);
+        functional.scheduler.cancel(__timeout);
     }
 
     @Override public Message out() { return __out; }
