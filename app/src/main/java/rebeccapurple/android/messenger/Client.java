@@ -10,12 +10,15 @@ import android.os.Messenger;
 import android.os.RemoteException;
 
 import rebeccapurple.Listener;
+import rebeccapurple.exception.CancellationTaskException;
+import rebeccapurple.schedule.Timeout;
 
 public class Client<SERVICE> extends Communicator implements rebeccapurple.commmunicator.Client<Message> {
     private final Context __context;
     private final Class<SERVICE> __class;
 
     private Messenger __server = null;
+
     private Listener<rebeccapurple.commmunicator.Client<Message>> __connect;
     private Listener<rebeccapurple.commmunicator.Client<Message>> __disconnect;
 
@@ -40,14 +43,7 @@ public class Client<SERVICE> extends Communicator implements rebeccapurple.commm
         }
     };
 
-    protected Boolean validate(Integer v){
-        return v!=null && v!=0 && __requests.get(v)!=null;
-    }
-
-    private Message issue(Message message){
-        message.arg1 = __integer.issue(this::validate);
-        return message;
-    }
+    protected Boolean validate(Integer v){ return v!=null && v!=0 && __requests.get(v)==null; }
 
     @Override
     public <TASK extends rebeccapurple.commmunicator.Task<Message>> TASK send(TASK task) {
@@ -68,24 +64,34 @@ public class Client<SERVICE> extends Communicator implements rebeccapurple.commm
         return null;
     }
 
-    protected Message issue(Request request){
-        Message message = issue(request.in());
-        __requests.put(message.arg1, request);
-        return message;
+    protected <REQUEST extends rebeccapurple.commmunicator.Request<Message>> Message message(REQUEST request){ return request != null ? request.in() : null; }
+
+    protected <REQUEST extends rebeccapurple.commmunicator.Request<Message>> REQUEST prepare(REQUEST o) throws ClassCastException {
+        if(o.in() != null){
+            if(o instanceof Request) {
+                Request request = (Request) o;
+                request.__in.arg1 = request.__unique = __integer.issue(this::validate);
+                request.__in.replyTo = __messenger;
+                request.__communicator = this;
+                __requests.put(request.__unique, request);
+                rebeccapurple.scheduler.dispatch(request.timeout());
+            } else {
+                throw new ClassCastException();
+            }
+        } else {
+            rebeccapurple.log.e("request.__in == null");
+        }
+        return o;
     }
 
     @Override
     public <REQUEST extends rebeccapurple.commmunicator.Request<Message>> REQUEST send(REQUEST request) {
         if(__server != null) {
-            if(request instanceof Request) {
-                try {
-                    __server.send(rebeccapurple.android.message.complete(issue((Request) request), __messenger));
-                    return request;
-                } catch (RemoteException e) {
-                    rebeccapurple.log.e("__server.send(rebeccapurple.android.message.complete(request.in(), __messenger))", e);
-                }
-            } else {
-                rebeccapurple.log.e("(request instanceof Request) == false");
+            try {
+                __server.send(message(prepare(request)));
+                return request;
+            } catch (RemoteException | ClassCastException e) {
+                rebeccapurple.log.e("__server.send(rebeccapurple.android.message.complete(request.in(), __messenger))", e);
             }
         } else {
             rebeccapurple.log.e("__server == null");

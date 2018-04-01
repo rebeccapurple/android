@@ -30,6 +30,7 @@ public class Application extends MultiDexApplication {
         rebeccapurple.log.stacktrace(false);
         rebeccapurple.log.add(rebeccapurple.android.log.get());
 
+        rebeccapurple.android.functional.init(this.getApplicationContext());
         rebeccapurple.json.init(Application::InitializeJson);
 
         rebeccapurple.scheduler.init(rebeccapurple.android.scheduler.get());

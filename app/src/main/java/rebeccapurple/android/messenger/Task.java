@@ -7,6 +7,7 @@ public class Task implements rebeccapurple.commmunicator.Task<Message> {
     protected int __state;
     protected Throwable __exception;
     protected Long __ttl;
+    protected Communicator __communicator;
 
     @Override public Message in() { return __in; }
     @Override public int state() { return __state; }
@@ -19,6 +20,10 @@ public class Task implements rebeccapurple.commmunicator.Task<Message> {
             if(!is(STATE.CANCELLED) && !is(STATE.COMPLETED)) {
                 __state = STATE.CANCELLED;
                 __exception = exception;
+                if(__communicator != null){
+                    __communicator.cancel(this);
+                    __communicator = null;
+                }
             } else {
                 rebeccapurple.log.e("is(STATE.CANCELLED) || is(STATE.COMPLETED)", exception);
             }

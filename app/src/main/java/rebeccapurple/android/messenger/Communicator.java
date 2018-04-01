@@ -1,5 +1,6 @@
 package rebeccapurple.android.messenger;
 
+import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
@@ -22,6 +23,8 @@ public abstract class Communicator implements rebeccapurple.commmunicator.Base<M
     protected Messenger __messenger;
     protected Handler __handler;
 
+    public IBinder binder(){ return __messenger!=null ? __messenger.getBinder() : null; }
+
     protected void complete(Messenger from, Message out, Throwable exception){
         if(out != null) {
             if (from != null) {
@@ -40,10 +43,14 @@ public abstract class Communicator implements rebeccapurple.commmunicator.Base<M
         __operators.put(type, operator);
     }
 
+/*    protected void call(rebeccapurple.scheduler.Task task, Throwable exception, rebeccapurple.Operator.On<Task> callback){
+        // __requests.remove();
+    }*/
+
     protected void on(Message message){
         Request request = __requests.get(message.arg1);
         if(request != null){
-            if(message.what == rebeccapurple.android.message.QUIT) {
+            if(message.arg2 == rebeccapurple.android.messenger.operator.command.quit) {
                 __requests.delete(message.arg1);
                 request.quit(message);
             } else {
@@ -54,7 +61,7 @@ public abstract class Communicator implements rebeccapurple.commmunicator.Base<M
             if(operator!=null){
                 operator.call(message.replyTo, message, this::complete);
             } else {
-                rebeccapurple.log.e(message);
+                rebeccapurple.log.e("operator == null");
             }
         }
     }

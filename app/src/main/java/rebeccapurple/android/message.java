@@ -19,8 +19,10 @@ import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 import java.util.Locale;
 
+
 public class message {
-    public static final int QUIT = 0;
+
+    public static void log(Message message){ rebeccapurple.log.e(message); }
 
     public static class serializer implements JsonSerializer<android.os.Message> {
         private JsonArray arguments(android.os.Message message){
@@ -86,12 +88,20 @@ public class message {
 
     public static Message complete(Message message, Messenger responsable, Throwable exception){ return put(complete(message, responsable), exception); }
 
-    public static Message ping(int request){
+    public static Message ping(){
         Message message = Message.obtain();
-        message.what = rebeccapurple.android.messenger.operator.type.PING;
-        message.arg1 = request;
+        message.what = rebeccapurple.android.messenger.operator.type.ping;
+        message.arg1 = 0;
         message.arg2 = 0;
-        put(message, "json", String.format(Locale.getDefault(), "{ \"ping\": %d }", System.currentTimeMillis()));
+        return put(message, "json", String.format(Locale.getDefault(), "{ \"ping\": %d }", System.currentTimeMillis()));
+    }
+
+    public static Message pong(int request){
+        Message message = Message.obtain();
+        message.what = rebeccapurple.android.messenger.operator.type.pong;
+        message.arg1 = request;
+        message.arg2 = rebeccapurple.android.messenger.operator.command.quit;
+        put(message, "json", String.format(Locale.getDefault(), "{ \"pong\": %d }", System.currentTimeMillis()));
         return message;
     }
 }
