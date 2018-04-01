@@ -6,7 +6,17 @@ public class Request extends Task implements rebeccapurple.commmunicator.Request
     protected Message __out;
     protected Integer __unique;
 
+    Message in(Message message){ return __in = message; }
+
     public Integer unique(){ return __unique; }
+
+    public void on(Message message){
+
+    }
+
+    public void quit(Message message){
+
+    }
 
     @Override public Message out() { return __out; }
 

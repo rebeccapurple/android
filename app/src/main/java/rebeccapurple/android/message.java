@@ -17,8 +17,11 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import java.lang.reflect.Type;
+import java.util.Locale;
 
 public class message {
+    public static final int QUIT = 0;
+
     public static class serializer implements JsonSerializer<android.os.Message> {
         private JsonArray arguments(android.os.Message message){
             JsonArray array = new JsonArray();
@@ -58,18 +61,37 @@ public class message {
         }
     }
 
+    public static Message put(Message message, Throwable exception){
+        if(exception != null) {
+            Bundle data = message.getData();
+            data.putString("exception", String.format(Locale.getDefault(), "{ \"exception\": { \"type\": \"%s\", \"message\": %s }}",
+                                                                           rebeccapurple.string.from(exception.getClass(), false),
+                                                                           exception.getMessage()));
+            message.setData(data);
+        }
+        return message;
+    }
+
+    public static Message put(Message message, String key, String value){
+        Bundle data = message.getData();
+        data.putString(key, value);
+        message.setData(data);
+        return message;
+    }
+
     public static Message complete(Message message, Messenger responsable){
         message.replyTo = responsable;
         return message;
     }
 
+    public static Message complete(Message message, Messenger responsable, Throwable exception){ return put(complete(message, responsable), exception); }
 
-
-
-    public static Message complete(Message message, Messenger responsable, Throwable exception){
-        message.replyTo = responsable;
-        /** TODO */
-        // put(message, exception);
+    public static Message ping(int request){
+        Message message = Message.obtain();
+        message.what = rebeccapurple.android.messenger.operator.type.PING;
+        message.arg1 = request;
+        message.arg2 = 0;
+        put(message, "json", String.format(Locale.getDefault(), "{ \"ping\": %d }", System.currentTimeMillis()));
         return message;
     }
 }

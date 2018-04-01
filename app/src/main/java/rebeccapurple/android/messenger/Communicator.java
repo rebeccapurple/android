@@ -5,23 +5,22 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.SparseArray;
 
-import rebeccapurple.commmunicator;
 import rebeccapurple.exception.CancellationTaskException;
 
-public class Communicator implements rebeccapurple.commmunicator.Base<Message> {
+public abstract class Communicator implements rebeccapurple.commmunicator.Base<Message> {
     public static class Handler extends android.os.Handler {
         private final Communicator __communicator;
 
         @Override public void handleMessage(Message message) { __communicator.on(message); }
 
-        public Handler(Communicator communicator){ __communicator = communicator; }
+        Handler(Communicator communicator){ __communicator = communicator; }
     }
 
-    protected SparseArray<Operator> __operators;
-    protected SparseArray<Request> __requests;
+    protected final SparseArray<Operator> __operators;
+    protected final SparseArray<Request> __requests;
+    protected final rebeccapurple.integer __integer;
     protected Messenger __messenger;
     protected Handler __handler;
-    protected Operator __default;
 
     protected void complete(Messenger from, Message out, Throwable exception){
         if(out != null) {
@@ -37,19 +36,25 @@ public class Communicator implements rebeccapurple.commmunicator.Base<Message> {
         }
     }
 
+    public void add(int type, Operator operator){
+        __operators.put(type, operator);
+    }
+
     protected void on(Message message){
         Request request = __requests.get(message.arg1);
         if(request != null){
-
+            if(message.what == rebeccapurple.android.message.QUIT) {
+                __requests.delete(message.arg1);
+                request.quit(message);
+            } else {
+                request.on(message);
+            }
         } else {
             Operator operator = __operators.get(message.what);
-            if(operator == null){
-                operator = __default;
-            }
             if(operator!=null){
                 operator.call(message.replyTo, message, this::complete);
             } else {
-                rebeccapurple.log.e("operator == null");
+                rebeccapurple.log.e(message);
             }
         }
     }
@@ -61,7 +66,7 @@ public class Communicator implements rebeccapurple.commmunicator.Base<Message> {
     }
 
     @Override
-    public void cancel(commmunicator.Task<Message> task) {
+    public void cancel(rebeccapurple.commmunicator.Task<Message> task) {
         if(task instanceof Request) {
             Request request = (Request) task;
             Integer unique = request.unique();
@@ -74,5 +79,13 @@ public class Communicator implements rebeccapurple.commmunicator.Base<Message> {
         } else {
             rebeccapurple.log.e("(task instanceof Request) == false");
         }
+    }
+
+    Communicator(){
+        __operators = new SparseArray<>();
+        __requests = new SparseArray<>();
+        __integer = new rebeccapurple.integer();
+        __messenger = null;
+        __handler = null;
     }
 }
