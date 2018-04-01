@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "io.textory.rebeccapurple.android"
+        applicationId "io.textory.rebeccapurple"
         minSdkVersion 15
         targetSdkVersion 27
         versionCode 1
@@ -33,5 +33,5 @@ dependencies {
 
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.android.volley:volley:1.1.0'
-    implementation 'com.github.rebeccapurple:java:a9f0eb985d'
+    implementation 'com.github.rebeccapurple:java:0799d19cec'
 }
