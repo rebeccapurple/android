@@ -6,7 +6,7 @@ import android.os.Looper;
 public class Scheduler extends rebeccapurple.scheduler.Loop {
     private static Scheduler __singleton = null;
 
-    public static Scheduler get() {
+    public static Scheduler Get() {
         synchronized (Scheduler.class) {
             if(__singleton == null) {
                 __singleton = new Scheduler();

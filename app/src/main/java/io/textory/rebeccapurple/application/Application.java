@@ -33,8 +33,10 @@ public class Application extends MultiDexApplication {
 
         functional.android.main.init();
         functional.json.init(Application::InitializeJson);
+        functional.scheduler.init(rebeccapurple.android.Scheduler.Get());
+        functional.android.http.client.init(this);
+        functional.http.client.init(functional.android.http.client.get(), rebeccapurple.android.http.Client::Factory);
 
-        functional.scheduler.init(rebeccapurple.android.Scheduler.get());
         functional.scheduler.on();
 
         io.textory.rebeccapurple.application.debug.run();

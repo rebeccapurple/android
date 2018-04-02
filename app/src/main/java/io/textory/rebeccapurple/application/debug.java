@@ -25,6 +25,17 @@ public class debug {
         }
     }
 
+    private static class http {
+        private static class response {
+            public static void json(rebeccapurple.http.Response response){
+                functional.log.e(response);
+                if(response != null) {
+                    functional.log.e(functional.json.from(new String(response.body())));
+                }
+            }
+        }
+    }
+
     public static void run(){
         __handler = new Handler();
 
@@ -33,5 +44,11 @@ public class debug {
         scheduler(functional.scheduler.dispatch(new Tick(1000L, functional.scheduler::log)), 15000L, schedule -> ()->schedule.cancel(new CancelledScheduleException()));
         scheduler(functional.scheduler.dispatch(new Timeout(3000L, functional.scheduler::log)), 1000L, schedule->()->schedule.cancel(new CancelledScheduleException()));
         scheduler(functional.scheduler.dispatch(new Timeout(4000L, functional.scheduler::log)), 2000L, schedule->()->functional.scheduler.reset(schedule));
+
+        try {
+            functional.http.client.get("https://api.github.com/users/yellowgrape", http.response::json);
+        } catch (Throwable e) {
+            functional.log.e("fail to functional.http.client.get(...)",e);
+        }
     }
 }
