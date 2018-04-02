@@ -2,6 +2,7 @@ package io.textory.rebeccapurple.application;
 
 import android.support.multidex.MultiDexApplication;
 
+import com.google.firebase.database.DatabaseError;
 import com.google.gson.GsonBuilder;
 
 
@@ -18,6 +19,7 @@ public class Application extends MultiDexApplication {
     private static void InitializeJson(GsonBuilder builder){
         builder.registerTypeAdapter(android.os.Message.class, new functional.android.message.serializer());
         builder.registerTypeAdapter(android.os.Message.class, new functional.android.message.deserializer());
+        builder.registerTypeAdapter(DatabaseError.class, new rebeccapurple.android.firebase.database.Serializer());
     }
 
 
@@ -36,6 +38,7 @@ public class Application extends MultiDexApplication {
         functional.scheduler.init(rebeccapurple.android.Scheduler.Get());
         functional.android.http.client.init(this);
         functional.http.client.init(functional.android.http.client.get(), rebeccapurple.android.http.Client::Factory);
+        functional.android.firebase.database.init();
 
         functional.scheduler.on();
 

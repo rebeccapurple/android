@@ -2,6 +2,8 @@ package io.textory.rebeccapurple.application;
 
 import android.os.Handler;
 
+import com.google.gson.annotations.Expose;
+
 import rebeccapurple.Function;
 import rebeccapurple.exception.CancelledScheduleException;
 import rebeccapurple.schedule.Time;
@@ -36,6 +38,11 @@ public class debug {
         }
     }
 
+    public static class FirebaseExample {
+        @Expose public String hello = "hello";
+        @Expose public String world = "world";
+    }
+
     public static void run(){
         __handler = new Handler();
 
@@ -50,5 +57,11 @@ public class debug {
         } catch (Throwable e) {
             functional.log.e("fail to functional.http.client.get(...)",e);
         }
+
+
+
+        functional.android.firebase.database.set("/", new FirebaseExample());
+        functional.android.firebase.database.set("/hello", "hello2");
+        functional.android.firebase.database.get("/", FirebaseExample.class, functional.log::e);
     }
 }
